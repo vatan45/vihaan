@@ -4,11 +4,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Biometric Payment Authentication</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 
 <body>
-    server is running
+    <div class="container">
+        <h1>Biometric Payment Authentication</h1>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email">
+        </div>
+
+        <div class="form-group">
+            <button id="registerBtn">Register Biometric</button>
+            <button id="authenticateBtn">Authenticate</button>
+        </div>
+
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <script src="/webauthn.js"></script>
+    <script>
+        const webauthn = new WebAuthnHandler();
+        const messageDiv = document.getElementById('message');
+
+        function showMessage(text, isError = false) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${isError ? 'error' : 'success'}`;
+            messageDiv.style.display = 'block';
+        }
+
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                showMessage('Please enter your email', true);
+                return;
+            }
+
+            try {
+                await webauthn.register(email);
+                showMessage('Biometric registration successful!');
+            } catch (error) {
+                showMessage(`Registration failed: ${error.message}`, true);
+            }
+        });
+
+        document.getElementById('authenticateBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                showMessage('Please enter your email', true);
+                return;
+            }
+
+            try {
+                const result = await webauthn.authenticate(email);
+                showMessage('Authentication successful! You can now proceed with your payment.');
+                // Here you can proceed with the payment flow
+                console.log('Authentication result:', result);
+            } catch (error) {
+                showMessage(`Authentication failed: ${error.message}`, true);
+            }
+        });
+    </script>
 </body>
 
 </html>

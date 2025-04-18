@@ -783,7 +783,7 @@ app.post('/api/merchants/login', async (req, res) => {
 });
 
 // Get user by fingerprint hash
-app.get('/api/payment/complete', async (req, res) => {
+app.get('/api/users/by-fingerprint', async (req, res) => {
     try {
         const { fingerprintHash } = req.query;
 
